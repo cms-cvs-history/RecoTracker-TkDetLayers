@@ -1,0 +1,10 @@
+<use name=Geometry/TrackerBaseAlgo>
+<use name=Geometry/TrackerSimAlgo>
+<use name=Geometry/CommonDetUnit>
+<use name=FWCore/Framework>      
+<use name=RecoTracker/TkDetLayers>   
+          
+<flags SEAL_PLUGIN_NAME="testRecoTrackerTkDetLayers">
+<library file=myAnalyzer.cc name=testRecoTrackerTkDetLayers>
+</library>
+ 
