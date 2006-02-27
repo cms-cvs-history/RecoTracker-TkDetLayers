@@ -100,7 +100,7 @@ myAnalyzer::analyze( const Event& iEvent, const EventSetup& iSetup )
   }
   
   cout << "Tob geometricDet has " << geometricDetTob->components().size() << " daughter" << endl;
-  const GeometricDet* geometricDetTOBlayer = geometricDetTob->components()[2];
+  const GeometricDet* geometricDetTOBlayer = geometricDetTob->components()[1];
 
   cout << "this Tob layer has: " << geometricDetTOBlayer->components().size() << " daughter" << endl;
 
