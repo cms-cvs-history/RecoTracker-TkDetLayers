@@ -11,18 +11,12 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h" 
-#include "Geometry/CommonDetUnit/interface/TrackingGeometry.h"
+#include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
-#include "Geometry/TrackerBaseAlgo/interface/GeometricDet.h"
+#include "Geometry/TrackerNumberingBuilder/interface/GeometricDet.h"
 #include "Geometry/CommonTopologies/interface/PixelTopology.h"
 #include "Geometry/CommonTopologies/interface/StripTopology.h"
-#include "Geometry/TrackerSimAlgo/interface/PixelGeomDetType.h"
-#include "Geometry/TrackerSimAlgo/interface/StripGeomDetType.h"
-
-#include "Geometry/TrackerSimAlgo/interface/PixelGeomDetUnit.h"
 #include "Geometry/Surface/interface/BoundSurface.h"
-
-#include "Geometry/TrackerBaseAlgo/interface/GeometricDet.h"
 
 
 // ======= specific includes =======
@@ -78,8 +72,8 @@ myAnalyzer::analyze( const Event& iEvent, const EventSetup& iSetup )
 {
   std::cout << "Here I am" << std::endl;
   
-  ESHandle<TrackingGeometry> pTrackingGeometry;
-  iSetup.get<TrackerDigiGeometryRecord>().get( pTrackingGeometry ); 
+  ESHandle<TrackerGeometry> pTrackerGeometry;
+  iSetup.get<TrackerDigiGeometryRecord>().get( pTrackerGeometry ); 
 
   ESHandle<GeometricDet> pDD;
   iSetup.get<IdealGeometryRecord>().get( pDD );     
@@ -117,7 +111,7 @@ myAnalyzer::analyze( const Event& iEvent, const EventSetup& iSetup )
   */
   
   TOBLayerBuilder myTOBBuilder;
-  TOBLayer* testTOBLayer = myTOBBuilder.build(geometricDetTOBlayer,&(*pTrackingGeometry));
+  TOBLayer* testTOBLayer = myTOBBuilder.build(geometricDetTOBlayer,&(*pTrackerGeometry));
 
   cout << "testTOBLayer: " << testTOBLayer << endl;
   // ------------- END -------------------------
@@ -127,7 +121,7 @@ myAnalyzer::analyze( const Event& iEvent, const EventSetup& iSetup )
   
   // -------- here it constructs the whole GeometricSearchTracker --------------
   GeometricSearchTrackerBuilder myTrackerBuilder;
-  GeometricSearchTracker* testTracker = myTrackerBuilder.build( &(*pDD),&(*pTrackingGeometry));
+  GeometricSearchTracker* testTracker = myTrackerBuilder.build( &(*pDD),&(*pTrackerGeometry));
   cout << "testTracker: " << testTracker << endl;
   // ------------- END -------------------------
   

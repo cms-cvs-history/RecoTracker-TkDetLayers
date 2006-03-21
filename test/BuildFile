@@ -1,6 +1,6 @@
-<use name=Geometry/TrackerBaseAlgo>
-<use name=Geometry/TrackerSimAlgo>
+<use name=Geometry/TrackerNumberingBuilder>
 <use name=Geometry/CommonDetUnit>
+<use name=Geometry/TrackerGeometryBuilder>
 <use name=FWCore/Framework>      
 <use name=RecoTracker/TkDetLayers>   
           
