@@ -1,0 +1,5 @@
+#
+# This cfi should be included to build the TrackerReco geometry.
+#
+
+es_module = TrackerRecoGeometryESProducer {}
