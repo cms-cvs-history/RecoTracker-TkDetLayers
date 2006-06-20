@@ -4,13 +4,13 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h" 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
 #include "Geometry/Records/interface/TrackerDigiGeometryRecord.h"
 #include "Geometry/TrackerNumberingBuilder/interface/GeometricDet.h"
@@ -70,15 +70,14 @@ myAnalyzer::~myAnalyzer()
 void
 myAnalyzer::analyze( const Event& iEvent, const EventSetup& iSetup )
 {
-  std::cout << "Here I am" << std::endl;
-  
   ESHandle<TrackerGeometry> pTrackerGeometry;
   iSetup.get<TrackerDigiGeometryRecord>().get( pTrackerGeometry ); 
 
   ESHandle<GeometricDet> pDD;
   iSetup.get<IdealGeometryRecord>().get( pDD );     
-  cout << " Top node is  "<< &(*pDD) << endl;   
-  cout << " And Contains  Daughters: "<< (*pDD).components().size() << endl;   
+  edm::LogInfo("TkDetLayersAnalyzer") 
+    << " Top node is  "<< &(*pDD) << "\n"
+    << " And Contains  Daughters: "<< (*pDD).components().size() ;   
 
 
   // -------- here it constructs only a TOBLayer -------------------------
@@ -88,15 +87,15 @@ myAnalyzer::analyze( const Event& iEvent, const EventSetup& iSetup )
   for(vector<const GeometricDet*>::const_iterator it=geometricDetLayers.begin();
       it!=geometricDetLayers.end(); it++){
     if(  (*it)->type() == GeometricDet::TOB ) {
-      cout << "found TOB geometricDet!" << endl;
+      edm::LogInfo("TkDetLayersAnalyzer") << "found TOB geometricDet!" ;
       geometricDetTob = (*it);
     }
   }
   
-  cout << "Tob geometricDet has " << geometricDetTob->components().size() << " daughter" << endl;
+  edm::LogInfo("TkDetLayersAnalyzer") << "Tob geometricDet has " << geometricDetTob->components().size() << " daughter" ;
   const GeometricDet* geometricDetTOBlayer = geometricDetTob->components()[1];
 
-  cout << "this Tob layer has: " << geometricDetTOBlayer->components().size() << " daughter" << endl;
+  edm::LogInfo("TkDetLayersAnalyzer") << "this Tob layer has: " << geometricDetTOBlayer->components().size() << " daughter" ;
 
   /*
     vector<const GeometricDet*> geometricDetTOBlayer3Strings = geometricDetTOBlayer3->components();
@@ -112,8 +111,7 @@ myAnalyzer::analyze( const Event& iEvent, const EventSetup& iSetup )
   
   TOBLayerBuilder myTOBBuilder;
   TOBLayer* testTOBLayer = myTOBBuilder.build(geometricDetTOBlayer,&(*pTrackerGeometry));
-
-  cout << "testTOBLayer: " << testTOBLayer << endl;
+  edm::LogInfo("TkDetLayersAnalyzer") << "testTOBLayer: " << testTOBLayer;
   // ------------- END -------------------------
 
 
@@ -122,7 +120,7 @@ myAnalyzer::analyze( const Event& iEvent, const EventSetup& iSetup )
   // -------- here it constructs the whole GeometricSearchTracker --------------
   GeometricSearchTrackerBuilder myTrackerBuilder;
   GeometricSearchTracker* testTracker = myTrackerBuilder.build( &(*pDD),&(*pTrackerGeometry));
-  cout << "testTracker: " << testTracker << endl;
+  edm::LogInfo("TkDetLayersAnalyzer") << "testTracker: " << testTracker ;
   // ------------- END -------------------------
   
 
