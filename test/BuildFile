@@ -5,6 +5,6 @@
 <use name=RecoTracker/TkDetLayers>   
           
 <flags SEAL_PLUGIN_NAME="testRecoTrackerTkDetLayers">
-<library file=myAnalyzer.cc name=testRecoTrackerTkDetLayers>
+<library file=TkDetLayersAnalyzer.cc name=testRecoTrackerTkDetLayers>
 </library>
  
