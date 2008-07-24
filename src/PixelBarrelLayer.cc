@@ -81,11 +81,19 @@ PixelBarrelLayer::groupedCompatibleDetsV( const TrajectoryStateOnSurface& tsos,
 					   const MeasurementEstimator& est,
 					   std::vector<DetGroup> & result) const {
   vector<DetGroup> closestResult;
+  vector<DetGroup> otherResult;
+  vector<DetGroup> nextResult1;
+  vector<DetGroup> nextResult2;
+  vector<DetGroup> result1;
+  vector<DetGroup> result2;
+
+
   SubLayerCrossings  crossings;
   crossings = computeCrossings( tsos, prop.propagationDirection());
-  if(! crossings.isValid()) return;  
-  
+  if(! crossings.isValid()) return;
+
   addClosest( tsos, prop, est, crossings.closest(), closestResult);
+  addClosest( tsos, prop, est, crossings.other(), otherResult);
   if (closestResult.empty()) {
     addClosest( tsos, prop, est, crossings.other(), result);
     return;
@@ -95,15 +103,20 @@ PixelBarrelLayer::groupedCompatibleDetsV( const TrajectoryStateOnSurface& tsos,
   float window = computeWindowSize( closestGel.det(), closestGel.trajectoryState(), est);
   
   searchNeighbors( tsos, prop, est, crossings.closest(), window,
-		   closestResult, false);
+		   nextResult1, false);
   
-  vector<DetGroup> nextResult;
   searchNeighbors( tsos, prop, est, crossings.other(), window,
-		   nextResult, true);
-  
+		   nextResult2, true);
+
+
   int crossingSide = LayerCrossingSide().barrelSide( closestGel.trajectoryState(), prop);
-  DetGroupMerger::orderAndMergeTwoLevels( closestResult, nextResult, result, 
+  DetGroupMerger::orderAndMergeTwoLevels( closestResult, otherResult, result1, 
 					  crossings.closestIndex(), crossingSide);
+  DetGroupMerger::orderAndMergeTwoLevels( nextResult1, result1, result2, 
+					  crossings.closestIndex(), crossingSide);
+  DetGroupMerger::orderAndMergeTwoLevels( nextResult2, result2, result, 
+					  crossings.closestIndex(), crossingSide);
+
 }
 
 
@@ -216,10 +229,10 @@ void PixelBarrelLayer::searchNeighbors( const TrajectoryStateOnSurface& tsos,
 
   if (checkClosest) { // must decide if the closest is on the neg or pos side
     if ( PhiLess()( gCrossingPos.phi(), sLayer[closestIndex]->position().phi())) {
-      posStartIndex = closestIndex;
+      posStartIndex = closestIndex+2;
     }
     else {
-      negStartIndex = closestIndex;
+      negStartIndex = closestIndex-2;
     }
   }
 
