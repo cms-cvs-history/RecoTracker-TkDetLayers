@@ -4,7 +4,7 @@
 
 #include "TrackingTools/DetLayers/interface/GeometricSearchDet.h"
 #include "TrackingTools/DetLayers/interface/DetRod.h"
-#include "TrackingTools/DetLayers/interface/PeriodicBinFinderInZ.h"
+#include "RecoTracker/TkDetLayers/interface/SemiPeriodicBinFinderInZ.h"
 #include "RecoTracker/TkDetLayers/interface/SubLayerCrossings.h"
 
 
@@ -14,7 +14,7 @@
 
 class TOBRod : public DetRod, public GeometricSearchDetWithGroups{
  public:
-  typedef PeriodicBinFinderInZ<float>   BinFinderType;
+  typedef SemiPeriodicBinFinderInZ<float>   BinFinderType;
 
   TOBRod(std::vector<const GeomDet*>& innerDets,
 	 std::vector<const GeomDet*>& outerDets);

@@ -1,7 +1,12 @@
 #include "RecoTracker/TkDetLayers/interface/GeometricSearchTracker.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
+#include <algorithm>
 
 using namespace std;
+
+  bool RadiusSort(const BarrelDetLayer* Layer1,const BarrelDetLayer* Layer2) {
+  return (Layer1->specificSurface().radius() < Layer2->specificSurface().radius()); 
+  }
 
 GeometricSearchTracker::GeometricSearchTracker(const vector<BarrelDetLayer*>& pxlBar,
 					       const vector<BarrelDetLayer*>& tib,
@@ -22,9 +27,20 @@ GeometricSearchTracker::GeometricSearchTracker(const vector<BarrelDetLayer*>& px
   thePosTidLayers(posTid.begin(),posTid.end()),
   thePosTecLayers(posTec.begin(),posTec.end())
 {
+
   theBarrelLayers.assign(thePixelBarrelLayers.begin(),thePixelBarrelLayers.end());
   theBarrelLayers.insert(theBarrelLayers.end(),theTibLayers.begin(),theTibLayers.end());
   theBarrelLayers.insert(theBarrelLayers.end(),theTobLayers.begin(),theTobLayers.end());
+
+  for (std::vector<BarrelDetLayer*>::const_iterator iPxB = theBarrelLayers.begin(); iPxB !=theBarrelLayers.end(); iPxB++ )  {
+    cout <<"Before sorting Radius= "<< (*iPxB)->specificSurface().radius() << endl;
+ }
+
+  std::sort(theBarrelLayers.begin(),theBarrelLayers.end(),RadiusSort);
+
+  for (std::vector<BarrelDetLayer*>::const_iterator iPxB = theBarrelLayers.begin(); iPxB !=theBarrelLayers.end(); iPxB++ )  {
+    cout << "After sorting Radius= "<< (*iPxB)->specificSurface().radius() << endl;
+ }
 
   theNegForwardLayers.assign(theNegPixelForwardLayers.begin(),theNegPixelForwardLayers.end());
   theNegForwardLayers.insert(theNegForwardLayers.end(),theNegTidLayers.begin(),theNegTidLayers.end());
