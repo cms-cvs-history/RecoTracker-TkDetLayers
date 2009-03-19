@@ -102,10 +102,21 @@ PixelBarrelLayer::groupedCompatibleDetsV( const TrajectoryStateOnSurface& tsos,
   
   addClosest( tsos, prop, est, crossings.closest(), closestResult);
   addClosest( tsos, prop, est, crossings.other(), otherResult);
-  if (closestResult.empty()) {
-    addClosest( tsos, prop, est, crossings.other(), result);
-    return;
+ 
+  // Fix for LongBarrel
+  //if (closestResult.empty()) {
+  //  addClosest( tsos, prop, est, crossings.other(), result);
+  //  return;
+  //}
+  if (closestResult.empty() && otherResult.empty()) {
+     return;
   }
+  // added to avoid seg fault when closestResult is empty:
+  if(closestResult.empty()) {
+     closestResult = otherResult;
+     otherResult.clear();
+  }
+  // End Fix for LongBarrel
 
   DetGroupElement closestGel( closestResult.front().front());
   float window = computeWindowSize( closestGel.det(), closestGel.trajectoryState(), est);
@@ -233,14 +244,16 @@ void PixelBarrelLayer::searchNeighbors( const TrajectoryStateOnSurface& tsos,
   int negStartIndex = closestIndex-1;
   int posStartIndex = closestIndex+1;
 
-  if (checkClosest) { // must decide if the closest is on the neg or pos side
-    if ( PhiLess()( gCrossingPos.phi(), sLayer[closestIndex]->position().phi())) {
-      posStartIndex = closestIndex+2;
-    }
-    else {
-      negStartIndex = closestIndex-2;
-    }
-  }
+  // Fix for LongBarrel
+  // if (checkClosest) { // must decide if the closest is on the neg or pos side
+  //  if ( PhiLess()( gCrossingPos.phi(), sLayer[closestIndex]->position().phi())) {
+  //    posStartIndex = closestIndex+2;
+  //  }
+  //  else {
+  //    negStartIndex = closestIndex-2;
+  //  }
+  //}
+  // End Fix for LongBarrel
 
   const BinFinderType& binFinder = (crossing.subLayerIndex()==0 ? theInnerBinFinder : theOuterBinFinder);
 
