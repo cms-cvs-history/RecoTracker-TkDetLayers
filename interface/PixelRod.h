@@ -3,14 +3,14 @@
 
 
 #include "TrackingTools/DetLayers/interface/DetRodOneR.h"
-#include "TrackingTools/DetLayers/interface/PeriodicBinFinderInZ.h"
+#include "Utilities/BinningTools/interface/GenericBinFinderInZ.h"
 
 /** A concrete implementation for PixelRod
  */
 
 class PixelRod : public DetRodOneR{
  public:
-    typedef PeriodicBinFinderInZ<float>   BinFinderType;
+    typedef GenericBinFinderInZ<float, GeomDet>   BinFinderType;
 
   PixelRod(std::vector<const GeomDet*>& theDets);
   ~PixelRod();
