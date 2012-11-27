@@ -141,7 +141,7 @@ PixelForwardLayer::groupedCompatibleDetsV( const TrajectoryStateOnSurface& tsos,
       int crossingSide = LayerCrossingSide().endcapSide( tsos, prop);
       int theHelicity = computeHelicity(theComps[theBinFinder_inner.binIndex(crossings_inner.closestIndex)],
   					theComps[theBinFinder_inner.binIndex(crossings_inner.nextIndex)] );
-      DetGroupMerger::orderAndMergeTwoLevels( closestResult_inner, nextResult_inner, result_inner, 
+      DetGroupMerger::orderAndMergeTwoLevels( std::move(closestResult_inner), std::move(nextResult_inner), result_inner,
   					    theHelicity, crossingSide);
       if (theHelicity == crossingSide) frontindex_inner = crossings_inner.closestIndex;
       else                             frontindex_inner = crossings_inner.nextIndex;
@@ -174,7 +174,7 @@ PixelForwardLayer::groupedCompatibleDetsV( const TrajectoryStateOnSurface& tsos,
       int crossingSide = LayerCrossingSide().endcapSide( tsos, prop);
       int theHelicity = computeHelicity(theComps[theBinFinder_outer.binIndex(crossings_outer.closestIndex) + _num_innerpanels],
   					theComps[theBinFinder_outer.binIndex(crossings_outer.nextIndex) + _num_innerpanels] );
-      DetGroupMerger::orderAndMergeTwoLevels( closestResult_outer, nextResult_outer, result_outer, 
+      DetGroupMerger::orderAndMergeTwoLevels( std::move(closestResult_outer), std::move(nextResult_outer), result_outer, 
   					    theHelicity, crossingSide);
       if (theHelicity == crossingSide) frontindex_outer = crossings_outer.closestIndex;
       else                             frontindex_outer = crossings_outer.nextIndex;
@@ -196,7 +196,7 @@ PixelForwardLayer::groupedCompatibleDetsV( const TrajectoryStateOnSurface& tsos,
     int crossingSide = LayerCrossingSide().endcapSide( tsos, prop);
     int theHelicity = computeHelicity(theComps[theBinFinder_inner.binIndex(frontindex_inner)],
   					theComps[theBinFinder_outer.binIndex(frontindex_outer) + _num_innerpanels] );
-    DetGroupMerger::orderAndMergeTwoLevels( result_inner, result_outer, result, 
+    DetGroupMerger::orderAndMergeTwoLevels( std::move(result_inner), std::move(result_outer), result, 
   					    theHelicity, crossingSide);
   }
 }
@@ -223,49 +223,51 @@ PixelForwardLayer::searchNeighbors( const TrajectoryStateOnSurface& tsos,
   if(innerDisk) quarter = _num_innerpanels/4;
   else quarter = _num_outerpanels/4;
  
-  vector<DetGroup> tmp;
-  vector<DetGroup> newResult;
   for (int idet=negStart; idet >= negStart - quarter+1; idet--) {
-    tmp.clear();
-    newResult.clear();
+    vector<DetGroup> tmp1;
+    vector<DetGroup> newResult;
     if(innerDisk) {
       const GeometricSearchDet* neighbor = theComps[theBinFinder_inner.binIndex(idet)];
       // if (!overlap( gCrossingPos, *neighbor, window)) break; // mybe not needed?
       // maybe also add shallow crossing angle test here???
-      if (!Adder::add( *neighbor, tsos, prop, est, tmp)) break;
+      if (!Adder::add( *neighbor, tsos, prop, est, tmp1)) break;
       int theHelicity = computeHelicity(theComps[theBinFinder_inner.binIndex(idet)],
   				      theComps[theBinFinder_inner.binIndex(idet+1)] );
-      Merger::orderAndMergeTwoLevels( tmp, result, newResult, theHelicity, crossingSide);
+      vector<DetGroup> tmp2; tmp2.swap(result);
+      Merger::orderAndMergeTwoLevels( std::move(tmp1), std::move(tmp2), newResult, theHelicity, crossingSide);
     } else {
       const GeometricSearchDet* neighbor = theComps[(theBinFinder_outer.binIndex(idet)) + _num_innerpanels];
       // if (!overlap( gCrossingPos, *neighbor, window)) break; // mybe not needed?
       // maybe also add shallow crossing angle test here???
-      if (!Adder::add( *neighbor, tsos, prop, est, tmp)) break;
+      if (!Adder::add( *neighbor, tsos, prop, est, tmp1)) break;
       int theHelicity = computeHelicity(theComps[(theBinFinder_outer.binIndex(idet)) + _num_innerpanels],
   				      theComps[(theBinFinder_outer.binIndex(idet+1)) + _num_innerpanels] );
-      Merger::orderAndMergeTwoLevels( tmp, result, newResult, theHelicity, crossingSide);
+      vector<DetGroup> tmp2; tmp2.swap(result);
+      Merger::orderAndMergeTwoLevels( std::move(tmp1), std::move(tmp2), newResult, theHelicity, crossingSide);
     }
     result.swap(newResult);
   }
   for (int idet=posStart; idet < posStart + quarter-1; idet++) {
-    tmp.clear();
-    newResult.clear();
+    vector<DetGroup> tmp1;
+    vector<DetGroup> newResult;
     if(innerDisk) {
       const GeometricSearchDet* neighbor = theComps[theBinFinder_inner.binIndex(idet)];
       // if (!overlap( gCrossingPos, *neighbor, window)) break; // mybe not needed?
       // maybe also add shallow crossing angle test here???
-      if (!Adder::add( *neighbor, tsos, prop, est, tmp)) break;
+      if (!Adder::add( *neighbor, tsos, prop, est, tmp1)) break;
       int theHelicity = computeHelicity(theComps[theBinFinder_inner.binIndex(idet-1)],
   				      theComps[theBinFinder_inner.binIndex(idet)] );
-      Merger::orderAndMergeTwoLevels( result, tmp, newResult, theHelicity, crossingSide);
+      vector<DetGroup> tmp2; tmp2.swap(result);
+      Merger::orderAndMergeTwoLevels(std::move(tmp2), std::move(tmp1), newResult, theHelicity, crossingSide);
     } else {
       const GeometricSearchDet* neighbor = theComps[(theBinFinder_outer.binIndex(idet)) + _num_innerpanels];
       // if (!overlap( gCrossingPos, *neighbor, window)) break; // mybe not needed?
       // maybe also add shallow crossing angle test here???
-      if (!Adder::add( *neighbor, tsos, prop, est, tmp)) break;
+      if (!Adder::add( *neighbor, tsos, prop, est, tmp1)) break;
       int theHelicity = computeHelicity(theComps[(theBinFinder_outer.binIndex(idet-1)) + _num_innerpanels],
   				      theComps[(theBinFinder_outer.binIndex(idet)) + _num_innerpanels] );
-      Merger::orderAndMergeTwoLevels( result, tmp, newResult, theHelicity, crossingSide);
+      vector<DetGroup> tmp2; tmp2.swap(result);
+      Merger::orderAndMergeTwoLevels(std::move(tmp2), std::move(tmp1), newResult, theHelicity, crossingSide);
     }
     result.swap(newResult);
   }
