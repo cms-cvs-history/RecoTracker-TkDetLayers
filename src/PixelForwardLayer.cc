@@ -141,7 +141,8 @@ PixelForwardLayer::groupedCompatibleDetsV( const TrajectoryStateOnSurface& tsos,
       int crossingSide = LayerCrossingSide().endcapSide( tsos, prop);
       int theHelicity = computeHelicity(theComps[theBinFinder_inner.binIndex(crossings_inner.closestIndex)],
   					theComps[theBinFinder_inner.binIndex(crossings_inner.nextIndex)] );
-      DetGroupMerger::orderAndMergeTwoLevels( std::move(closestResult_inner), std::move(nextResult_inner), result_inner,
+      vector<DetGroup> tmp99 = closestResult_inner;
+      DetGroupMerger::orderAndMergeTwoLevels( std::move(tmp99), std::move(nextResult_inner), result_inner,
   					    theHelicity, crossingSide);
       if (theHelicity == crossingSide) frontindex_inner = crossings_inner.closestIndex;
       else                             frontindex_inner = crossings_inner.nextIndex;
@@ -174,7 +175,8 @@ PixelForwardLayer::groupedCompatibleDetsV( const TrajectoryStateOnSurface& tsos,
       int crossingSide = LayerCrossingSide().endcapSide( tsos, prop);
       int theHelicity = computeHelicity(theComps[theBinFinder_outer.binIndex(crossings_outer.closestIndex) + _num_innerpanels],
   					theComps[theBinFinder_outer.binIndex(crossings_outer.nextIndex) + _num_innerpanels] );
-      DetGroupMerger::orderAndMergeTwoLevels( std::move(closestResult_outer), std::move(nextResult_outer), result_outer, 
+      vector<DetGroup> tmp99 = closestResult_outer;
+      DetGroupMerger::orderAndMergeTwoLevels( std::move(tmp99), std::move(nextResult_outer), result_outer, 
   					    theHelicity, crossingSide);
       if (theHelicity == crossingSide) frontindex_outer = crossings_outer.closestIndex;
       else                             frontindex_outer = crossings_outer.nextIndex;
